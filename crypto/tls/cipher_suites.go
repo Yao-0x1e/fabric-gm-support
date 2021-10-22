@@ -17,7 +17,7 @@ import (
 	"fmt"
 	"hash"
 
-	"golang.org/x/crypto/chacha20poly1305"
+	"github.com/gxnublockchain/gmsupport/internal/x/crypto/chacha20poly1305"
 )
 
 // CipherSuite is a TLS cipher suite. Note that most functions in this package

@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"strings"
 
-	"golang.org/x/crypto/cryptobyte"
+	"github.com/gxnublockchain/gmsupport/internal/x/crypto/cryptobyte"
 )
 
 // The marshalingFunction type is an adapter to allow the use of ordinary

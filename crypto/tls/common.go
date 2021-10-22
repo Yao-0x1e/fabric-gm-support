@@ -17,7 +17,7 @@ import (
 	"github.com/gxnublockchain/gmsupport/crypto/elliptic"
 	"github.com/gxnublockchain/gmsupport/crypto/rsa"
 	"github.com/gxnublockchain/gmsupport/crypto/x509"
-	"golang.org/x/sys/cpu"
+	"github.com/gxnublockchain/gmsupport/internal/x/sys/cpu"
 	"io"
 	"math/big"
 	"net"

@@ -13,7 +13,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"golang.org/x/net/http/httpguts"
+	"github.com/gxnublockchain/gmsupport/internal/x/net/http/httpguts"
 )
 
 // maxInt64 is the effective "infinite" value for the Server and

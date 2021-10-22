@@ -2,7 +2,7 @@ package sha256
 
 import (
 	"github.com/gxnublockchain/gmsupport/crypto"
-	"github.com/tjfoc/gmsm/sm3"
+	"github.com/gxnublockchain/gmsupport/internal/tjfoc/gmsm/sm3"
 	"hash"
 )
 

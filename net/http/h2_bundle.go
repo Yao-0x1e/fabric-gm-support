@@ -47,9 +47,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"golang.org/x/net/http/httpguts"
-	"golang.org/x/net/http2/hpack"
-	"golang.org/x/net/idna"
+	"github.com/gxnublockchain/gmsupport/internal/x/net/http/httpguts"
+	"github.com/gxnublockchain/gmsupport/internal/x/net/http2/hpack"
+	"github.com/gxnublockchain/gmsupport/internal/x/net/idna"
 )
 
 // A list of the possible cipher suite ids. Taken from

@@ -35,7 +35,7 @@ import (
 	"github.com/gxnublockchain/gmsupport/crypto/aes"
 	"github.com/gxnublockchain/gmsupport/crypto/elliptic"
 	"github.com/gxnublockchain/gmsupport/internal/randutil"
-	"github.com/tjfoc/gmsm/sm2"
+	"github.com/gxnublockchain/gmsupport/internal/tjfoc/gmsm/sm2"
 	"io"
 	"math/big"
 )

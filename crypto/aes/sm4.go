@@ -2,7 +2,7 @@ package aes
 
 import (
 	"crypto/cipher"
-	"github.com/tjfoc/gmsm/sm4"
+	"github.com/gxnublockchain/gmsupport/internal/tjfoc/gmsm/sm4"
 )
 
 const BlockSize = sm4.BlockSize

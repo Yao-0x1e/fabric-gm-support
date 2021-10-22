@@ -14,7 +14,7 @@ package elliptic
 // reverse the transform than to operate in affine coordinates.
 
 import (
-	"github.com/tjfoc/gmsm/sm2"
+	"github.com/gxnublockchain/gmsupport/internal/tjfoc/gmsm/sm2"
 	"io"
 	"math/big"
 	"sync"

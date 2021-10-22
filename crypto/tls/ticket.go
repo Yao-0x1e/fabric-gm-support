@@ -12,7 +12,7 @@ import (
 	"errors"
 	"github.com/gxnublockchain/gmsupport/crypto/aes"
 	"github.com/gxnublockchain/gmsupport/crypto/sha256"
-	"golang.org/x/crypto/cryptobyte"
+	"github.com/gxnublockchain/gmsupport/internal/x/crypto/cryptobyte"
 	"io"
 )
 
