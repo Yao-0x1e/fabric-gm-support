@@ -220,6 +220,11 @@ cp -r $GOPATH/src/github.com/gxnublockchain/gmsupport vendor/github.com/gxnubloc
 然后在test-network已经启动了的情况下使用以下命令测试即可：
 
 ```bash
+# 删除现有的密钥和钱包
+rm -rf keystore
+rm -rf wallet
+
+go run ./assetTransfer.go
 go build
 ./asset-transfer-basic
 ```
