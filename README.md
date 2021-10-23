@@ -17,7 +17,7 @@ source /etc/profile
 
 Docker
 
-```json
+```bash
 cat > /etc/docker/daemon.json <<EOF
 {
   "registry-mirrors": [
@@ -43,10 +43,11 @@ git clone https://gitee.com/Yao-0x1e/fabric.git
 cd fabric
 git checkout release-2.2
 # 注意该命令只执行一次
+export GO111MODULE=on
 go mod vendor
 ```
 
-使用VS Code打开项目，关键词搜索替换标准库依赖为国密：
+使用VS Code远程编辑Linux上的项目（在Windows下编辑会有文件权限的问题），或者使用Linux的sed命令，关键词搜索替换标准库依赖为国密：
 
 ```
 "crypto"\n -> "github.com/gxnublockchain/gmsupport/crypto"\n
@@ -57,6 +58,7 @@ go mod vendor
 "crypto/elliptic"\n -> "github.com/gxnublockchain/gmsupport/crypto/elliptic"\n
 "crypto/tls"\n -> "github.com/gxnublockchain/gmsupport/crypto/tls"\n
 "crypto/rsa"\n -> "github.com/gxnublockchain/gmsupport/crypto/rsa"\n
+"crypto/ed25519"\n -> "github.com/gxnublockchain/gmsupport/crypto/ed25519"\n
 
 "net/textproto"\n -> "github.com/gxnublockchain/gmsupport/net/textproto"\n
 "net/http"\n -> "github.com/gxnublockchain/gmsupport/net/http"\n
@@ -100,8 +102,7 @@ cp -r $GOPATH/src/github.com/hyperledger/fabric/vendor/* $GOPATH/src
 docker rmi `docker images | grep fabric-tools` -f
 docker rmi `docker images | grep fabric-peer` -f
 docker rmi `docker images | grep fabric-orderer` -f
-# 编译命令
-chmod +x scripts/*
+# 编译命名和镜像
 make release
 cp release/linux-amd64/bin/* /usr/local/bin
 make docker
@@ -111,7 +112,33 @@ docker rmi `docker images | grep none` -f
 
 
 
-## 2. hyperledger/fabric-samples
+## 2. hyperledger/fabric-ca
+
+下载fabric-ca并切换到release-1.4分支：
+
+```bash
+cd $GOPATH/src/github.com/hyperledger
+git clone https://gitee.com/Yao-0x1e/fabric-ca.git
+cd fabric-ca
+git checkout release-1.4
+# 注意这一步很重要否则无法编译
+export GO111MODULE=off
+```
+
+先进行与fabric相同的依赖替换操作，然后一样地将国密包加入vendor中即可。然后通过以下命令进行部署即可：
+
+```bash
+make fabric-ca-client
+make fabric-ca-server
+mv bin/* /usr/local/bin
+
+export FABRIC_CA_DYNAMIC_LINK=true
+make docker
+```
+
+
+
+## 3. hyperledger/fabric-samples
 
 下载fabric-samples并切换到release-2.2分支：
 
@@ -123,22 +150,24 @@ git checkout release-2.2
 cp -r $GOPATH/src/github.com/hyperledger/fabric/sampleconfig config
 ```
 
-修改**test-network/scripts/deployCC.sh**的打包中的**go mod vendor**，避免在安装链码的过程中下载非国密的依赖。
+### 3.1 asset-transfer-basic/chaincode-go
 
-以asset-transfer-basic合约为例进行国密改造，过程如下：
+删除**test-network/scripts/deployCC.sh**脚本中的**go mod vendor**，避免在安装链码的过程中下载非国密的依赖。
+
+以asset-transfer-basic中的合约为例进行国密改造，过程如下：
 
 ```bash
 cd asset-transfer-basic/chaincode-go/
 export GO111MODULE=on
 go mod vendor
+```
 
-# 替换国密（使用之前改造fabric时的依赖）
-cp -r $GOPATH/src/github.com/hyperledger/fabric-chaincode-go vendor/github.com/hyperledger
-cp -r $GOPATH/src/github.com/hyperledger/fabric-protos-go vendor/github.com/hyperledger
+然后对替换asset-transfer-basic/chaincode-go文件夹里的密码学依赖为国密，同样为关键词搜索替换。替换完成后导入国密依赖即可：
+
+```bash
 # 导入国密相关的依赖
 mkdir -p vendor/github.com/gxnublockchain
-cp -r $GOPATH/src/github.com/gxnublockchain/gmsupport vendor/github.com/gxnublockchain/
-cp -r $GOPATH/src/google.golang.org/grpc vendor/google.golang.org
+cp -r $GOPATH/src/github.com/gxnublockchain/gmsupport vendor/github.com/gxnublockchain
 ```
 
 经过上述步骤即可完成一个合约的国密改造，同样适用于其他任意Go语言编写的合约。
@@ -147,7 +176,7 @@ cp -r $GOPATH/src/google.golang.org/grpc vendor/google.golang.org
 
 ```bash
 cd test-network
-./network.sh up createChannel -s couchdb
+./network.sh up createChannel -s couchdb -ca
 ./network.sh deployCC -ccn basic -ccp ../asset-transfer-basic/chaincode-go -ccl go
 
 export FABRIC_CFG_PATH=`pwd`/../config/
@@ -168,30 +197,30 @@ peer chaincode query -C mychannel -n basic -c '{"function":"ReadAsset","Args":["
 
 
 
-## 3. hyperledger/fabric-ca
+### 3.2 asset-transfer-basic/application-go
 
-下载fabric-ca并切换到release-1.4分支：
-
-```bash
-cd $GOPATH/src/github.com/hyperledger
-git clone https://gitee.com/Yao-0x1e/fabric-ca.git
-cd fabric-ca
-git checkout release-1.4
-# 注意这一步很重要
-export GO111MODULE=off
-```
-
-先进行与fabric相同的依赖替换操作，然后一样地将国密包加入vendor中即可。然后通过以下命令进行部署即可：
+以asset-transfer-basic中的SDK客户端为例进行国密改造，过程如下：
 
 ```bash
-make fabric-ca-client
-make fabric-ca-server
-mv bin/* /usr/local/bin
-
-export FABRIC_CA_DYNAMIC_LINK=true
-make docker
+cd asset-transfer-basic/application-go/
+export GO111MODULE=on
+go mod vendor
 ```
 
+然后对替换asset-transfer-basic/application-go文件夹里的密码学依赖为国密，同样为关键词搜索替换。替换完成后导入国密依赖即可：
 
+```bash
+# 导入国密相关的依赖
+mkdir -p vendor/github.com/gxnublockchain
+cp -r $GOPATH/src/github.com/gxnublockchain/gmsupport vendor/github.com/gxnublockchain
+```
 
-## 4. hyperledger/fabric-sdk-go
+经过上述步骤即可完成一个SDK客户端的国密改造，同样适用于其他任意Go语言编写的SDK客户端。
+
+然后在test-network已经启动了的情况下使用以下命令测试即可：
+
+```bash
+go build
+./asset-transfer-basic
+```
+
