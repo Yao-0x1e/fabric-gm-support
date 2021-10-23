@@ -106,7 +106,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 ```bash
 mkdir -p vendor/github.com/gxnublockchain/
 # 下载国密依赖并重命名
-git clone https://gitee.com/Yao-0x1e/fabric-gm-support.gi
+git clone https://gitee.com/Yao-0x1e/fabric-gm-support.git
 rm -rf fabric-gm-support/.git
 mv fabric-gm-support vendor/github.com/gxnublockchain/gmsupport
 
