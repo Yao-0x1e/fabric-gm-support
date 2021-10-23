@@ -8,9 +8,9 @@ import (
 	"bufio"
 	"errors"
 	"github.com/gxnublockchain/gmsupport/net/http"
+	"github.com/gxnublockchain/gmsupport/net/textproto"
 	"io"
 	"net"
-	"net/textproto"
 	"sync"
 )
 

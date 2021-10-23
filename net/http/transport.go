@@ -21,7 +21,7 @@ import (
 	"log"
 	"net"
 	"github.com/gxnublockchain/gmsupport/net/http/httptrace"
-	"net/textproto"
+	"github.com/gxnublockchain/gmsupport/net/textproto"
 	"net/url"
 	"os"
 	"reflect"

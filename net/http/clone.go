@@ -5,8 +5,9 @@
 package http
 
 import (
+	"github.com/gxnublockchain/gmsupport/net/textproto"
 	"mime/multipart"
-	"net/textproto"
+	sdktextproto "net/textproto"
 	"net/url"
 )
 
@@ -59,7 +60,7 @@ func cloneMultipartFileHeader(fh *multipart.FileHeader) *multipart.FileHeader {
 	}
 	fh2 := new(multipart.FileHeader)
 	*fh2 = *fh
-	fh2.Header = textproto.MIMEHeader(Header(fh.Header).Clone())
+	fh2.Header = sdktextproto.MIMEHeader(textproto.MIMEHeader(Header(fh.Header).Clone()))
 	return fh2
 }
 

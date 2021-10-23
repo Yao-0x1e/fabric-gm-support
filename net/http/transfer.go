@@ -13,7 +13,7 @@ import (
 	"github.com/gxnublockchain/gmsupport/net/http/internal"
 	"io"
 	"io/ioutil"
-	"net/textproto"
+	"github.com/gxnublockchain/gmsupport/net/textproto"
 	"reflect"
 	"sort"
 	"strconv"

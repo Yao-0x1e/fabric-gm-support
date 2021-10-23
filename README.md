@@ -1,5 +1,37 @@
 # Hyperledger Fabric 国密改造
 
+## 0. Proxy
+
+Golang
+
+```bash
+# 临时设置
+export GO111MODULE=on
+export GOPROXY=https://goproxy.cn
+
+# 永久设置
+echo "export GO111MODULE=on" >> /etc/profile
+echo "export GOPROXY=https://goproxy.cn" >> /etc/profile
+source /etc/profile
+```
+
+Docker
+
+```json
+cat > /etc/docker/daemon.json <<EOF
+{
+  "registry-mirrors": [
+        "https://registry.docker-cn.com",
+        "https://docker.mirrors.ustc.edu.cn",
+        "http://hub-mirror.c.163.com",
+        "https://cr.console.aliyun.com/"
+  ]
+}
+EOF
+```
+
+
+
 ## 1. hyperledger/fabric
 
 下载fabric项目并切换分支至release-2.2：
@@ -7,7 +39,7 @@
 ```bash
 mkdir $GOPATH/src/github.com/hyperledger
 cd $GOPATH/src/github.com/hyperledger
-git clone https://github.com/hyperledger/fabric.git
+git clone https://gitee.com/Yao-0x1e/fabric.git
 cd fabric
 git checkout release-2.2
 # 注意该命令只执行一次
@@ -26,6 +58,7 @@ go mod vendor
 "crypto/tls"\n -> "github.com/gxnublockchain/gmsupport/crypto/tls"\n
 "crypto/rsa"\n -> "github.com/gxnublockchain/gmsupport/crypto/rsa"\n
 
+"net/textproto"\n -> "github.com/gxnublockchain/gmsupport/net/textproto"\n
 "net/http"\n -> "github.com/gxnublockchain/gmsupport/net/http"\n
 "net/http/httptest"\n -> "github.com/gxnublockchain/gmsupport/net/http/httptest"\n
 "net/http/httptrace"\n -> "github.com/gxnublockchain/gmsupport/net/http/httptrace"\n
@@ -52,9 +85,6 @@ cd vendor/github.com/gxnublockchain/
 git clone https://gitee.com/Yao-0x1e/fabric-gm-support.git
 mv fabric-gm-support gmsupport
 rm -rf gmsupport/.git
-# 将国密兼容包的其他依赖导入
-cp -r gmsupport/vendor/github.com $GOPATH/src/github.com/hyperledger/fabric/vendor
-cp -r gmsupport/vendor/golang.org $GOPATH/src/github.com/hyperledger/fabric/vendor
 ```
 
 由于在构建ccenv时会从系统的gopath/src复制依赖，所以需要将hyperledger/fabric/vendor下的所有内容复制到gopath/src路径下。命令如下：
@@ -83,9 +113,11 @@ docker rmi `docker images | grep none` -f
 
 ## 2. hyperledger/fabric-samples
 
+下载fabric-samples并切换到release-2.2分支：
+
 ```bash
 cd $GOPATH/src/github.com/hyperledger
-git clone https://github.com/hyperledger/fabric-samples.git
+git clone https://gitee.com/Yao-0x1e/fabric-samples.git
 cd fabric-samples
 git checkout release-2.2
 cp -r $GOPATH/src/github.com/hyperledger/fabric/sampleconfig config
@@ -97,6 +129,7 @@ cp -r $GOPATH/src/github.com/hyperledger/fabric/sampleconfig config
 
 ```bash
 cd asset-transfer-basic/chaincode-go/
+export GO111MODULE=on
 go mod vendor
 
 # 替换国密（使用之前改造fabric时的依赖）
@@ -105,8 +138,6 @@ cp -r $GOPATH/src/github.com/hyperledger/fabric-protos-go vendor/github.com/hype
 # 导入国密相关的依赖
 mkdir -p vendor/github.com/gxnublockchain
 cp -r $GOPATH/src/github.com/gxnublockchain/gmsupport vendor/github.com/gxnublockchain/
-cp -r $GOPATH/src/github.com/gxnublockchain/gmsupport/vendor/github.com/* vendor/github.com
-cp -r $GOPATH/src/github.com/gxnublockchain/gmsupport/vendor/golang.org/* vendor/golang.org
 cp -r $GOPATH/src/google.golang.org/grpc vendor/google.golang.org
 ```
 
@@ -138,5 +169,29 @@ peer chaincode query -C mychannel -n basic -c '{"function":"ReadAsset","Args":["
 
 
 ## 3. hyperledger/fabric-ca
+
+下载fabric-ca并切换到release-1.4分支：
+
+```bash
+cd $GOPATH/src/github.com/hyperledger
+git clone https://gitee.com/Yao-0x1e/fabric-ca.git
+cd fabric-ca
+git checkout release-1.4
+# 注意这一步很重要
+export GO111MODULE=off
+```
+
+先进行与fabric相同的依赖替换操作，然后一样地将国密包加入vendor中即可。然后通过以下命令进行部署即可：
+
+```bash
+make fabric-ca-client
+make fabric-ca-server
+mv bin/* /usr/local/bin
+
+export FABRIC_CA_DYNAMIC_LINK=true
+make docker
+```
+
+
 
 ## 4. hyperledger/fabric-sdk-go

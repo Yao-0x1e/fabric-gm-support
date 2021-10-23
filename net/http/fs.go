@@ -9,10 +9,11 @@ package http
 import (
 	"errors"
 	"fmt"
+	"github.com/gxnublockchain/gmsupport/net/textproto"
 	"io"
 	"mime"
 	"mime/multipart"
-	"net/textproto"
+	sdktextproto "net/textproto"
 	"net/url"
 	"os"
 	"path"
@@ -267,7 +268,7 @@ func serveContent(w ResponseWriter, r *Request, name string, modtime time.Time, 
 			defer pr.Close() // cause writing goroutine to fail and exit if CopyN doesn't finish.
 			go func() {
 				for _, ra := range ranges {
-					part, err := mw.CreatePart(ra.mimeHeader(ctype, size))
+					part, err := mw.CreatePart(sdktextproto.MIMEHeader(ra.mimeHeader(ctype, size)))
 					if err != nil {
 						pw.CloseWithError(err)
 						return
@@ -828,7 +829,7 @@ func rangesMIMESize(ranges []httpRange, contentType string, contentSize int64) (
 	var w countingWriter
 	mw := multipart.NewWriter(&w)
 	for _, ra := range ranges {
-		mw.CreatePart(ra.mimeHeader(contentType, contentSize))
+		mw.CreatePart(sdktextproto.MIMEHeader(ra.mimeHeader(contentType, contentSize)))
 		encSize += ra.length
 	}
 	mw.Close()

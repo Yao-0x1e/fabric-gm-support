@@ -10,8 +10,8 @@ import (
 	"context"
 	"github.com/gxnublockchain/gmsupport/crypto/tls"
 	"github.com/gxnublockchain/gmsupport/internal/nettrace"
+	"github.com/gxnublockchain/gmsupport/net/textproto"
 	"net"
-	"net/textproto"
 	"reflect"
 	"time"
 )

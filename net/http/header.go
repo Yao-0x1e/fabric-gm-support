@@ -6,8 +6,8 @@ package http
 
 import (
 	"github.com/gxnublockchain/gmsupport/net/http/httptrace"
+	"github.com/gxnublockchain/gmsupport/net/textproto"
 	"io"
-	"net/textproto"
 	"sort"
 	"strings"
 	"sync"
